@@ -2,6 +2,7 @@
 import speech_recognition as sr
 from gtts import gTTS
 import os
+import time
 
 
 while True:
@@ -34,6 +35,8 @@ while True:
                             speech = gTTS(lang="de", text=text)
                             speech.save("notiz.mp3")
                             os.system("start notiz.mp3")
+                            time.sleep(3)
+
 
                             # wakeup rd
                             with sr.Microphone() as source:
@@ -50,9 +53,27 @@ while True:
                                         speech.save("notiz.mp3")
                                         os.system("start notiz.mp3")
 
-                                        file = open("notiz.txt", "w")
-                                        file.write(data)
-                                        file.close()
+                                        time.sleep(3)
+
+                                        with sr.Microphone() as source:
+                                            print("Spreche..")
+                                            audio = r.listen(source)
+                                            try:
+                                                print("Die Spracherkennung denkt du sagst: " +
+                                                      r.recognize_google(audio, language="de-DE"))
+                                                data = str(r.recognize_google(audio, language="de-DE"))
+
+                                                file = open("notiz.txt", "w")
+                                                file.write(data)
+                                                file.close()
+
+                                            except sr.UnknownValueError:
+                                                print("Die Spracherkennung konnte das Audio nicht verstehen")
+                                            except sr.RequestError as e:
+                                                print(
+                                                    "Ergebnisse vom Google-Spracherkennungsdienst konnten nicht angefordert werden; {0}".format(
+                                                        e))
+
                                     else:
                                         break
                                 except sr.UnknownValueError:
